@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সোলার লোড ক্যালকুলেটর ও সাইজিং গাইড</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Noto Sans Bengali -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans Bengali', 'sans-serif'],
+                    },
+                    colors: {
+                        solar: {
+                            50: '#fffbe1',
+                            100: '#fff3b8',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                            700: '#a16207',
+                            800: '#854d0e',
+                            900: '#713f12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            background-color: #f8fafc;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background: white;
+            }
+            .shadow-lg, .shadow-md, .shadow-sm {
+                box-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white shadow-md sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <i class="fa-solid font-bold fa-sun text-2xl sm:text-3xl text-yellow-200 animate-spin-slow"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">সোলার লোড ক্যালকুলেটর</h1>
+                    <p class="text-xs sm:text-sm text-amber-100">সঠিক হিসাব ও সোলার সিস্টেম সাইজিং নির্দেশিকা</p>
+                </div>
+            </div>
+            
+            <div class="mt-3 sm:mt-0 flex space-x-2 space-x-reverse">
+                <button id="tab-btn-calc" onclick="switchTab('calculator')" class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 bg-white text-amber-800 shadow">
+                    <i class="fa-solid fa-calculator mr-1"></i> ক্যালকুলেটর
+                </button>
+                <button id="tab-btn-guide" onclick="switchTab('guide')" class="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 bg-amber-700/60 hover:bg-amber-700 text-white">
+                    <i class="fa-solid fa-book-open mr-1"></i> নির্দেশিকা
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- TAB 1: CALCULATOR VIEW -->
+        <div id="tab-calculator" class="space-y-6">
+            
+            <!-- Quick Preset Toolbar & Add Button -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3 no-print">
+                <div class="flex items-center space-x-2 space-x-reverse text-slate-700 font-semibold text-sm sm:text-base">
+                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                    <span>দ্রুত ডিভাইস যুক্ত করুন:</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="addPresetAppliance('LED লাইট', 20, 6, 4)" class="px-3 py-1.5 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 text-xs sm:text-sm font-medium rounded-lg border border-slate-200 transition">
+                        + LED লাইট (20W)
+                    </button>
+                    <button onclick="addPresetAppliance('ফ্যান', 75, 12, 3)" class="px-3 py-1.5 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 text-xs sm:text-sm font-medium rounded-lg border border-slate-200 transition">
+                        + ফ্যান (75W)
+                    </button>
+                    <button onclick="addPresetAppliance('টিভি', 100, 4, 1)" class="px-3 py-1.5 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 text-xs sm:text-sm font-medium rounded-lg border border-slate-200 transition">
+                        + টিভি (100W)
+                    </button>
+                    <button onclick="addPresetAppliance('রেফ্রিজারেটর', 150, 10, 1)" class="px-3 py-1.5 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 text-xs sm:text-sm font-medium rounded-lg border border-slate-200 transition">
+                        + ফ্রিজ (150W)
+                    </button>
+                    <button onclick="addPresetAppliance('ওয়াইফাই রাউটার', 15, 24, 1)" class="px-3 py-1.5 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 text-xs sm:text-sm font-medium rounded-lg border border-slate-200 transition">
+                        + রাউটার (15W)
+                    </button>
+                    <button onclick="addPresetAppliance('পানি পাম্প', 750, 1, 1)" class="px-3 py-1.5 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 text-xs sm:text-sm font-medium rounded-lg border border-slate-200 transition">
+                        + পাম্প (750W)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid Layout: Appliance Table & Parameters -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Left Column: Appliance Table (2 cols width in LG) -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                        <h2 class="font-bold text-slate-800 text-base sm:text-lg flex items-center">
+                            <i class="fa-solid fa-list-check text-amber-600 mr-2"></i> লোড তালিকা (Appliances List)
+                        </h2>
+                        <button onclick="addCustomRow()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs sm:text-sm font-medium transition shadow-sm no-print">
+                            <i class="fa-solid fa-plus mr-1"></i> নতুন যোগ করুন
+                        </button>
+                    </div>
+
+                    <!-- Responsive Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-slate-100/70 text-slate-600 border-b border-slate-200 font-semibold">
+                                    <th class="p-3">ডিভাইসের নাম</th>
+                                    <th class="p-3 text-center w-20">সংখ্যা</th>
+                                    <th class="p-3 text-center w-24">ওয়াট (W)</th>
+                                    <th class="p-3 text-center w-28">ঘণ্টা (hrs/day)</th>
+                                    <th class="p-3 text-right w-28">দৈনিক (Wh)</th>
+                                    <th class="p-3 text-center w-12 no-print">মুছুন</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appliance-table-body" class="divide-y divide-slate-100">
+                                <!-- Dynamic Rows Inserted Here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty state notice -->
+                    <div id="empty-state" class="hidden p-8 text-center text-slate-400">
+                        <i class="fa-solid fa-folder-open text-4xl mb-2"></i>
+                        <p>কোনো ডিভাইস যুক্ত করা হয়নি। উপরে বোতামে ক্লিক করে যুক্ত করুন।</p>
+                    </div>
+                </div>
+
+                <!-- Right Column: System Parameters (1 col width in LG) -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-5 no-print">
+                    <h2 class="font-bold text-slate-800 text-base sm:text-lg border-b border-slate-100 pb-2 flex items-center">
+                        <i class="fa-solid fa-sliders text-amber-600 mr-2"></i> সিস্টেম প্যারামিটার
+                    </h2>
+
+                    <!-- System Voltage -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">সিস্টেম ভোল্টেজ (System Voltage)</label>
+                        <select id="param-voltage" onchange="calculateSolarSystem()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <option value="12">12 Volt (ছোট সিস্টেম / সাধারণ ব্যবহার)</option>
+                            <option value="24" selected>24 Volt (মাঝারি সিস্টেম / পরামর্শকৃত)</option>
+                            <option value="48">48 Volt (বড় বা বাণিজ্যিক সিস্টেম)</option>
+                        </select>
+                        <p class="text-[11px] text-slate-500 mt-1">১০০০ ওয়াটের বেশি লোড হলে ২৪V বা ৪৮V ভালো।</p>
+                    </div>
+
+                    <!-- Peak Sun Hours -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">সূর্যের গড় আলো (Peak Sun Hours)</label>
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <input type="number" id="param-sunhours" value="4.5" step="0.1" min="1" max="10" oninput="calculateSolarSystem()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <span class="text-xs font-medium text-slate-500">ঘণ্টা/দিন</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1">বাংলাদেশের জন্য গড়ে ৪.৫ ঘণ্টা ধরা হয়।</p>
+                    </div>
+
+                    <!-- System Loss Factor -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">সিস্টেম লস (Safety/Efficiency Loss)</label>
+                        <select id="param-loss" onchange="calculateSolarSystem()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <option value="1.20">20% লস (উন্নত তার ও ইনভার্টার)</option>
+                            <option value="1.25" selected>25% লস (মানসম্মত গড় ব্যবস্থা)</option>
+                            <option value="1.30">30% লস (অতিরিক্ত সুরক্ষার জন্য)</option>
+                        </select>
+                    </div>
+
+                    <!-- Battery Type & DoD -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">ব্যাটারির ধরন (Depth of Discharge - DoD)</label>
+                        <select id="param-battery-type" onchange="calculateSolarSystem()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <option value="0.50" selected>টিউবুলার / লিড অ্যাসিড (50% DoD)</option>
+                            <option value="0.80">লিথিয়াম আয়ন / LiFePO4 (80% DoD)</option>
+                            <option value="0.60">জেল ব্যাটারি (GEL) (60% DoD)</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- OUTPUT CARDS SECTION -->
+            <div id="results-container" class="space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-chart-pie text-amber-600 mr-2"></i> প্রস্তাবিত সোলার সিস্টেম সাইজিং
+                    </h2>
+                    <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg transition no-print shadow-sm">
+                        <i class="fa-solid fa-print mr-1"></i> রিপোর্ট প্রিন্ট / PDF
+                    </button>
+                </div>
+
+                <!-- 4 Main Cards Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <!-- Card 1: Total Running Watt -->
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-2 -bottom-2 text-blue-200/50 text-6xl">
+                            <i class="fa-solid fa-plug-circle-bolt"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-blue-700 uppercase tracking-wide">একসাথে সর্বোচ্চ রানিং লোড</p>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-blue-900 mt-1" id="out-running-watt">0 W</p>
+                        <p class="text-xs text-blue-600 mt-2 font-medium font-mono" id="out-running-sub">সর্বোচ্চ একইসাথে চলা লোড</p>
+                    </div>
+
+                    <!-- Card 2: Daily Energy -->
+                    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-2 -bottom-2 text-amber-200/50 text-6xl">
+                            <i class="fa-solid fa-charging-station"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-amber-700 uppercase tracking-wide">দৈনিক মোট চাহিদা</p>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-amber-900 mt-1" id="out-daily-wh">0 Wh</p>
+                        <p class="text-xs text-amber-700 mt-2 font-bold" id="out-daily-unit">0.00 Unit (kWh)</p>
+                    </div>
+
+                    <!-- Card 3: Recommended Solar Panel -->
+                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-2 -bottom-2 text-emerald-200/50 text-6xl">
+                            <i class="fa-solid fa-solar-panel"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-emerald-700 uppercase tracking-wide">প্রয়োজনীয় সোলার প্যানেল</p>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-emerald-900 mt-1" id="out-panel-watt">0 Watt</p>
+                        <p class="text-xs text-emerald-700 mt-2 font-medium" id="out-panel-count">000W-এর ০টি প্যানেল</p>
+                    </div>
+
+                    <!-- Card 4: Recommended Battery -->
+                    <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-2 -bottom-2 text-purple-200/50 text-6xl">
+                            <i class="fa-solid fa-car-battery"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-purple-700 uppercase tracking-wide">প্রয়োজনীয় ব্যাটারি ব্যাংক</p>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-purple-900 mt-1" id="out-battery-ah">0 Ah</p>
+                        <p class="text-xs text-purple-700 mt-2 font-medium" id="out-battery-details">(@ 24V System)</p>
+                    </div>
+
+                </div>
+
+                <!-- Detailed Component Recommendations Box -->
+                <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-md flex items-center border-b pb-2">
+                        <i class="fa-solid fa-screwdriver-wrench text-amber-600 mr-2"></i> সিস্টেমের প্রধান যন্ত্রাংশের পরামর্শ (System Specification)
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <!-- Inverter Specs -->
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div class="font-semibold text-slate-700 flex items-center">
+                                <i class="fa-solid fa-microchip text-blue-600 mr-2"></i> ইনভার্টার / আইপিএস সাইজ
+                            </div>
+                            <p class="text-lg font-bold text-slate-900 mt-1" id="out-inverter-rating">0 VA / 0.0 kW</p>
+                            <p class="text-xs text-slate-500 mt-1">পাওয়ার ফ্যাক্টর ০.৮ এবং স্টার্টিং সার্জ কারেন্ট (১.২৫ গুণ) ধরে নির্ধারিত।</p>
+                        </div>
+
+                        <!-- Charge Controller Specs -->
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div class="font-semibold text-slate-700 flex items-center">
+                                <i class="fa-solid fa-gauge-high text-emerald-600 mr-2"></i> চার্জ কন্ট্রোলার (MPPT)
+                            </div>
+                            <p class="text-lg font-bold text-slate-900 mt-1" id="out-controller-rating">0 Ampere</p>
+                            <p class="text-xs text-slate-500 mt-1">প্যানেলের ওয়াট অনুযায়ী সর্বনিম্ন অ্যাম্পিয়ার রেটিং। MPPT কন্ট্রোলার ব্যবহার করুন।</p>
+                        </div>
+
+                        <!-- Cable / Wiring Suggestion -->
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div class="font-semibold text-slate-700 flex items-center">
+                                <i class="fa-solid fa-wire-code text-purple-600 mr-2"></i> প্রস্তাবিত তারের সাইজ (Cable)
+                            </div>
+                            <p class="text-lg font-bold text-slate-900 mt-1" id="out-cable-size">4 mm² - 6 mm²</p>
+                            <p class="text-xs text-slate-500 mt-1">সোলার প্যানেল থেকে কন্ট্রোলার পর্যন্ত তামার (Copper) তার ব্যবহার করুন।</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- TAB 2: DETAILED GUIDE VIEW -->
+        <div id="tab-guide" class="hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
+                
+                <div class="border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">সোলার সিস্টেম লোড হিসাব করার সহজ গাইডলাইন</h2>
+                    <p class="text-slate-600 text-sm mt-1">বাড়িতে সোলার বসানোর আগে কীভাবে সঠিকভাবে প্যানেল, ব্যাটারি ও ইনভার্টার নির্বাচন করবেন তা নিচে ধাপে ধাপে আলোচনা করা হলো।</p>
+                </div>
+
+                <!-- Section 1: Load Calculation Method -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-amber-700 flex items-center">
+                        <span class="w-7 h-7 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center text-sm mr-2">১</span>
+                        লোড এবং দৈনিক বিদ্যুৎ চাহিদা হিসাব
+                    </h3>
+                    <div class="text-sm text-slate-700 space-y-2 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <p><strong>১. রানিং ওয়াট (Running Load):</strong> আপনার ঘরের কতগুলো যন্ত্রপাতি <i>এক সাথে</i> চলবে তার ওয়াটের যোগফল। যেমন: ৩টি ফ্যান (৭৫W $\times$ ৩ = ২২৫W) + ৪টি লাইট (২০W $\times$ ৪ = ৮০W) = ৩০৫ ওয়াট।</p>
+                        <p><strong>২. ওয়াট-আওয়ার (Watt-Hour / Wh):</strong> প্রতিটি ডিভাইস দৈনিক কত ঘণ্টা চলবে তা দিয়ে গুণ করে বের করা হয়। যেমন: ৩০৫ ওয়াটের লোড দিনে ১০ ঘণ্টা চললে চাহিদা = ৩০৫ $\times$ ১০ = ৩০৫০ Wh (বা ৩.০৫ ইউনিট)।</p>
+                        <p><strong>৩. সিস্টেম লস (Loss Factor):</strong> ইনভার্টারের দক্ষতা, তারের রেজিস্ট্যান্স এবং ব্যাটারি চার্জিং লসের কারণে অতিরিক্ত **২৫% শক্তি** হিসাব করতে হয়। অর্থাৎ, প্রকৃত চাহিদা = ৩০৫০ $\times$ ১.২৫ = ৩৮১২.৫ Wh।</p>
+                    </div>
+                </div>
+
+                <!-- Section 2: Panel Sizing -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-amber-700 flex items-center">
+                        <span class="w-7 h-7 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center text-sm mr-2">২</span>
+                        সোলার প্যানেল কীভাবে বাছাই করবেন?
+                    </h3>
+                    <div class="text-sm text-slate-700 space-y-2 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <p>বাংলাদেশে গড়ে দিনে **৪.৫ ঘণ্টা** পূর্ণ রোদ (Peak Sun Hours) পাওয়া যায়।</p>
+                        <div class="p-3 bg-amber-50 font-mono text-xs rounded border border-amber-200 text-amber-900">
+                            প্রয়োজনীয় প্যানেল ওয়াট = (দৈনিক মোট চাহিদা Wh $\times$ ১.২৫) ÷ ৪.৫ ঘণ্টা
+                        </div>
+                        <ul class="list-disc list-inside space-y-1 text-slate-600 pt-1">
+                            <li><strong>Mono-PERC/Half-Cut Panel:</strong> বর্তমানে সবচেয়ে উন্নত এবং কম রোদে বা মেঘলা দিনে ভালো কাজ করে।</li>
+                            <li><strong>Polycrystalline Panel:</strong> দামে কিছুটা সস্তা হলেও কার্যক্ষমতা কম।</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Section 3: Inverter Sizing -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-amber-700 flex items-center">
+                        <span class="w-7 h-7 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center text-sm mr-2">৩</span>
+                        ইনভার্টার বা আইপিএস (Inverter/IPS) নির্বাচন
+                    </h3>
+                    <div class="text-sm text-slate-700 space-y-2 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <p>ইনভার্টারের সাইজ নির্ভর করে একসাথে আপনি কত ওয়াট চালাবেন তার ওপর। ফ্রিজ বা মোটরের ক্ষেত্রে মোটর চালু হওয়ার সময় **২-৩ গুণ অতিরিক্ত কারেন্ট (Surge Current)** টানে, তাই অন্তত ২৫%-৫০% অতিরিক্ত সুরক্ষা মার্জিন রাখা উচিত।</p>
+                        <div class="p-3 bg-amber-50 font-mono text-xs rounded border border-amber-200 text-amber-900">
+                            ইনভার্টার (VA) = (সর্বোচ্চ রানিং ওয়াট $\times$ ১.২৫) ÷ ০.৮ (Power Factor)
+                        </div>
+                        <p class="text-xs text-slate-500">সর্বদা <strong>Pure Sine Wave (পিওর সাইন ওয়েভ)</strong> ইনভার্টার ব্যবহার করবেন, এতে ফ্যান ও ইলেকট্রনিক্স নিরাপদ থাকে এবং শব্দ করে না।</p>
+                    </div>
+                </div>
+
+                <!-- Section 4: Battery Selection -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-amber-700 flex items-center">
+                        <span class="w-7 h-7 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center text-sm mr-2">৪</span>
+                        ব্যাটারি ব্যাকআপ সাইজিং (Battery Bank)
+                    </h3>
+                    <div class="text-sm text-slate-700 space-y-2 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <p>রাতে সোলার প্যানেল বিদ্যুৎ উৎপন্ন করে না। তাই রাতের চাহিদার জন্য ব্যাটারি প্রয়োজন।</p>
+                        <p>ব্যাটারির দীর্ঘস্থায়িত্বের জন্য এটিকে পুরোপুরি খালি (Deep Discharge) করা যায় না। এটিকে **Depth of Discharge (DoD)** বলে।</p>
+                        <ul class="list-disc list-inside space-y-1 text-slate-600">
+                            <li><strong>টিউবুলার / লিড-অ্যাসিড:</strong> ৫০% পর্যন্ত ডিসচার্জ করা নিরাপদ (DoD 0.50)। আয়ু ২-৪ বছর।</li>
+                            <li><strong>লিথিয়াম আয়রন ফসফেট (LiFePO4):</strong> ৮০% পর্যন্ত ডিসচার্জ করা যায় (DoD 0.80)। আয়ু ৮-১০ বছর এবং দ্রুত চার্জ হয়।</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400 py-4 text-center text-xs border-t border-slate-700 no-print mt-auto">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>সহজ সোলার লোড ক্যালকুলেটর &bull; বাংলাদেশের আবহাওয়া ও স্ট্যান্ডার্ড হিসাব অনুযায়ী তৈরি</p>
+        </div>
+    </footer>
+
+    <script>
+        // Default Appliances State
+        let appliances = [
+            { id: 1, name: 'LED লাইট', watt: 20, hours: 6, qty: 4 },
+            { id: 2, name: 'ফ্যান', watt: 75, hours: 10, qty: 3 },
+            { id: 3, name: 'টিভি', watt: 100, hours: 4, qty: 1 },
+            { id: 4, name: 'রেফ্রিজারেটর', watt: 150, hours: 10, qty: 1 }
+        ];
+
+        let nextId = 5;
+
+        // Initialize App
+        window.onload = function() {
+            renderApplianceTable();
+            calculateSolarSystem();
+        };
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            const calcTab = document.getElementById('tab-calculator');
+            const guideTab = document.getElementById('tab-guide');
+            const btnCalc = document.getElementById('tab-btn-calc');
+            const btnGuide = document.getElementById('tab-btn-guide');
+
+            if (tabName === 'calculator') {
+                calcTab.classList.remove('hidden');
+                guideTab.classList.add('hidden');
+                
+                btnCalc.className = "px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 bg-white text-amber-800 shadow";
+                btnGuide.className = "px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 bg-amber-700/60 hover:bg-amber-700 text-white";
+            } else {
+                calcTab.classList.add('hidden');
+                guideTab.classList.remove('hidden');
+
+                btnGuide.className = "px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 bg-white text-amber-800 shadow";
+                btnCalc.className = "px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 bg-amber-700/60 hover:bg-amber-700 text-white";
+            }
+        }
+
+        // Render Table Rows
+        function renderApplianceTable() {
+            const tbody = document.getElementById('appliance-table-body');
+            const emptyState = document.getElementById('empty-state');
+            tbody.innerHTML = '';
+
+            if (appliances.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            appliances.forEach(item => {
+                const dailyWh = item.watt * item.hours * item.qty;
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-3 font-medium text-slate-800">
+                        <input type="text" value="${item.name}" onchange="updateAppliance(${item.id}, 'name', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-500 focus:bg-white focus:outline-none rounded px-1 py-0.5">
+                    </td>
+                    <td class="p-3 text-center">
+                        <input type="number" min="1" value="${item.qty}" oninput="updateAppliance(${item.id}, 'qty', this.value)" class="w-16 text-center bg-slate-50 border border-slate-200 rounded p-1 text-xs sm:text-sm focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                    </td>
+                    <td class="p-3 text-center">
+                        <input type="number" min="1" value="${item.watt}" oninput="updateAppliance(${item.id}, 'watt', this.value)" class="w-20 text-center bg-slate-50 border border-slate-200 rounded p-1 text-xs sm:text-sm focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                    </td>
+                    <td class="p-3 text-center">
+                        <input type="number" min="0.5" max="24" step="0.5" value="${item.hours}" oninput="updateAppliance(${item.id}, 'hours', this.value)" class="w-20 text-center bg-slate-50 border border-slate-200 rounded p-1 text-xs sm:text-sm focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                    </td>
+                    <td class="p-3 text-right font-semibold text-slate-700">
+                        ${dailyWh.toLocaleString()} Wh
+                    </td>
+                    <td class="p-3 text-center no-print">
+                        <button onclick="removeAppliance(${item.id})" class="text-rose-500 hover:text-rose-700 p-1 transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Add Preset Appliance
+        function addPresetAppliance(name, watt, hours, qty) {
+            appliances.push({
+                id: nextId++,
+                name: name,
+                watt: parseInt(watt),
+                hours: parseFloat(hours),
+                qty: parseInt(qty)
+            });
+            renderApplianceTable();
+            calculateSolarSystem();
+        }
+
+        // Add Custom Row
+        function addCustomRow() {
+            appliances.push({
+                id: nextId++,
+                name: 'নতুন ডিভাইস',
+                watt: 50,
+                hours: 5,
+                qty: 1
+            });
+            renderApplianceTable();
+            calculateSolarSystem();
+        }
+
+        // Remove Appliance
+        function removeAppliance(id) {
+            appliances = appliances.filter(item => item.id !== id);
+            renderApplianceTable();
+            calculateSolarSystem();
+        }
+
+        // Update Item Value
+        function updateAppliance(id, field, value) {
+            const item = appliances.find(i => i.id === id);
+            if (!item) return;
+
+            if (field === 'name') item.name = value;
+            else if (field === 'qty') item.qty = Math.max(1, parseInt(value) || 0);
+            else if (field === 'watt') item.watt = Math.max(0, parseInt(value) || 0);
+            else if (field === 'hours') item.hours = Math.min(24, Math.max(0, parseFloat(value) || 0));
+
+            renderApplianceTable();
+            calculateSolarSystem();
+        }
+
+        function calculateSolarSystem() {
+            // 1. Calculate Totals from List
+            let totalRunningWatt = 0;
+            let totalDailyWh = 0;
+
+            appliances.forEach(item => {
+                totalRunningWatt += (item.watt * item.qty);
+                totalDailyWh += (item.watt * item.qty * item.hours);
+            });
+
+            // 2. Read Parameters
+            const systemVoltage = parseInt(document.getElementById('param-voltage').value) || 24;
+            const sunHours = parseFloat(document.getElementById('param-sunhours').value) || 4.5;
+            const lossFactor = parseFloat(document.getElementById('param-loss').value) || 1.25;
+            const dod = parseFloat(document.getElementById('param-battery-type').value) || 0.50;
+
+            // 3. Solar Panel Wattage Calculation
+            // Daily Wh with safety loss / Peak Sun Hours
+            const effectiveDailyWh = totalDailyWh * lossFactor;
+            const reqPanelWatt = Math.ceil(effectiveDailyWh / sunHours);
+
+            // Panel Count Suggestion (e.g., using 400W or 330W panels)
+            let panelUnitWatt = 400;
+            if (reqPanelWatt < 600) panelUnitWatt = 200;
+            else if (reqPanelWatt < 1200) panelUnitWatt = 330;
+            
+            const panelCount = Math.ceil(reqPanelWatt / panelUnitWatt);
+
+            // 4. Inverter Size Calculation
+            // Running Watt * 1.25 Surge Margin / Power Factor (0.8)
+            const reqInverterVA = Math.ceil((totalRunningWatt * 1.25) / 0.8);
+            const reqInverterkW = (totalRunningWatt / 1000).toFixed(2);
+
+            // 5. Battery Capacity Calculation (Ah)
+            // (Total Daily Wh / Voltage) / DoD
+            const reqBatteryAh = Math.ceil((effectiveDailyWh / systemVoltage) / dod);
+
+            // 6. Charge Controller Amperes (MPPT)
+            // Panel Watt / System Voltage
+            const reqControllerAmp = Math.ceil((reqPanelWatt / systemVoltage) * 1.2); // 20% margin
+
+            // 7. Auto-suggest system voltage if wattage is very high
+            const voltageSelect = document.getElementById('param-voltage');
+            if (totalRunningWatt > 2500 && systemVoltage === 12) {
+                voltageSelect.value = "48";
+                calculateSolarSystem();
+                return;
+            } else if (totalRunningWatt > 1000 && totalRunningWatt <= 2500 && systemVoltage === 12) {
+                voltageSelect.value = "24";
+                calculateSolarSystem();
+                return;
+            }
+
+            // Helper function to safely update innerText
+            const setVal = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = text;
+            };
+
+            // 8. Update UI Display
+            setVal('out-running-watt', `${totalRunningWatt.toLocaleString()} W`);
+            setVal('out-running-sub', totalRunningWatt > 0 ? `সর্বোচ্চ একসাথে ${totalRunningWatt}W ওয়াট লোড` : 'কোনো লোড নেই');
+
+            setVal('out-daily-wh', `${Math.round(totalDailyWh).toLocaleString()} Wh`);
+            const units = (totalDailyWh / 1000).toFixed(2);
+            setVal('out-daily-unit', `${units} Unit (kWh) / দিন`);
+
+            setVal('out-panel-watt', `${reqPanelWatt.toLocaleString()} Watt`);
+            setVal('out-panel-count', reqPanelWatt > 0 ? `(${panelUnitWatt}W-এর প্রায় ${panelCount}টি প্যানেল)` : '০টি প্যানেল');
+
+            setVal('out-battery-ah', `${reqBatteryAh.toLocaleString()} Ah`);
+            setVal('out-battery-details', `@ ${systemVoltage}V ব্যাকআপ ব্যাংক (DoD ${(dod*100)}%)`);
+
+            setVal('out-inverter-rating', `${reqInverterVA.toLocaleString()} VA (${(reqInverterVA/1000).toFixed(1)} kVA)`);
+            setVal('out-controller-rating', `${reqControllerAmp} Ampere (MPPT)`);
+
+            // Cable Size Suggestion based on current
+            if (reqControllerAmp <= 20) {
+                setVal('out-cable-size', '4 mm² (Copper Cable)');
+            } else if (reqControllerAmp <= 40) {
+                setVal('out-cable-size', '6 mm² (Copper Cable)');
+            } else {
+                setVal('out-cable-size', '10 mm² বা তদূর্ধ্ব');
+            }
+        }
+    </script>
+</body>
+</html>
